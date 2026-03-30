@@ -1,8 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import wasm from 'vite-plugin-wasm'
-import topLevelAwait from 'vite-plugin-top-level-await'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
+import path from "path";
 
 export default defineConfig({
   plugins: [
@@ -12,12 +13,17 @@ export default defineConfig({
     tailwindcss(),
   ],
 
+  resolve: {
+    alias: {
+      eventemitter3: path.resolve(__dirname, "node_modules/eventemitter3/index.js"),
+    },
+  },
+
   optimizeDeps: {
-    // Exclude cofhejs from pre-bundling (WASM must load natively)
-    // but force-include tweetnacl so Vite converts it from CJS → ESM
     exclude: ["cofhejs"],
     include: [
       "tweetnacl",
+      "eventemitter3",
       "ethers-v5 > ethers",
     ],
   },
@@ -38,9 +44,8 @@ export default defineConfig({
       external: [],
     },
     commonjsOptions: {
-      // Force tweetnacl CJS to be transformed for ESM compatibility
-      include: [/tweetnacl/],
+      include: [/tweetnacl/, /eventemitter3/, /node_modules/],
       transformMixedEsModules: true,
     },
   },
-})
+});
